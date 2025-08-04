@@ -24,6 +24,8 @@ import {
   RefreshCw,
   Home,
   LogOut,
+  History,
+  ClipboardPlus
 } from "lucide-react"
 import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
@@ -131,7 +133,7 @@ export default function AdminDashboard() {
     setAdminUser(null)
 
     // Redirect to login page
-    router.push("/admin/login")
+    router.push("/")
   }
 
   // Confirm logout
@@ -288,33 +290,45 @@ export default function AdminDashboard() {
               transition={{ delay: 0.4 }}
               className="flex items-center space-x-3"
             >
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => window.location.reload()}
-                className="hover:bg-green-50 hover:border-green-200 transition-all duration-300"
-              >
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Refresh
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => router.push("/")}
-                className="hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
-              >
-                <Home className="h-4 w-4 mr-2" />
-                Beranda
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={confirmLogout}
-                className="hover:bg-red-50 hover:border-red-200 hover:text-red-600 transition-all duration-300 bg-transparent"
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => window.location.reload()}
+              className="hover:bg-green-50 hover:border-green-200 transition-all duration-300"
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Refresh
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push("/history")}
+              className="h-9 hover:bg-blue-50 transition-all flex items-center justify-center space-x-2"
+            >
+              <History className="h-4 w-4" />
+              <span>Lihat Riwayat</span>
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push("/dashboard/admin/pengajuan")}
+              className="hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
+            >
+              <ClipboardPlus className="h-4 w-4 mr-2" />
+              Pengajuan
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={confirmLogout}
+              className="hover:bg-red-50 hover:border-red-200 hover:text-red-600 transition-all duration-300"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Logout
+            </Button>
             </motion.div>
           </div>
         </div>
@@ -633,3 +647,4 @@ export default function AdminDashboard() {
     </div>
   )
 }
+
