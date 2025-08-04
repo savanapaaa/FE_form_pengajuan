@@ -142,182 +142,231 @@ const MobileAuthPage = () => {
   // Check if already logged in
   useEffect(() => {
     const checkAuthStatus = () => {
-      const isLoggedIn = localStorage.getItem("adminLoggedIn")
-      const adminUser = localStorage.getItem("adminUser")
+      const isLoggedIn = localStorage.getItem("loggedIn");
+      const currentUser = localStorage.getItem("currentUser");
 
-      if (isLoggedIn === "true" && adminUser) {
+      if (isLoggedIn === "true" && currentUser) {
         try {
-          const userData = JSON.parse(adminUser)
+          const userData = JSON.parse(currentUser);
+          
           // Check if remember me was enabled or if session is still valid
           if (userData.rememberMe || userData.loginTime) {
-            const loginTime = new Date(userData.loginTime)
-            const now = new Date()
-            const hoursDiff = (now.getTime() - loginTime.getTime()) / (1000 * 60 * 60)
+            const loginTime = new Date(userData.loginTime);
+            const now = new Date();
+            const hoursDiff = (now.getTime() - loginTime.getTime()) / (1000 * 60 * 60);
 
             // If remember me is enabled, session lasts 30 days, otherwise 24 hours
-            const sessionDuration = userData.rememberMe ? 24 * 30 : 24
+            const sessionDuration = userData.rememberMe ? 24 * 30 : 24;
 
             if (hoursDiff < sessionDuration) {
-              router.push("/dashboard/admin")
-              return
+              // Redirect based on role
+              switch (userData.role) {
+                case 'superadmin':
+                  router.push("/dashboard/superadmin");
+                  break;
+                case 'admin':
+                  router.push("/dashboard/admin");
+                  break;
+                case 'user':
+                  router.push("/dashboard/user");
+                  break;
+                default:
+                  router.push("/");
+              }
+              return;
             }
           }
         } catch (error) {
-          console.error("Error parsing admin user data:", error)
+          console.error("Error parsing user data:", error);
         }
       }
 
       // Clear invalid session
-      localStorage.removeItem("adminLoggedIn")
-      localStorage.removeItem("adminUser")
-    }
+      localStorage.removeItem("loggedIn");
+      localStorage.removeItem("currentUser");
+    };
 
-    checkAuthStatus()
-  }, [router])
+    checkAuthStatus();
+  }, [router]);
 
   const validateForm = () => {
     if (!username.trim()) {
-      setError("Username harus diisi")
-      return false
+      setError("Username harus diisi");
+      return false;
     }
 
     if (!password.trim()) {
-      setError("Password harus diisi")
-      return false
+      setError("Password harus diisi");
+      return false;
     }
 
     if (!isLogin) {
       if (!fullName.trim()) {
-        setError("Nama lengkap harus diisi")
-        return false
+        setError("Nama lengkap harus diisi");
+        return false;
       }
       if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        setError("Email tidak valid")
-        return false
+        setError("Email tidak valid");
+        return false;
       }
       if (password.length < 6) {
-        setError("Password minimal 6 karakter")
-        return false
+        setError("Password minimal 6 karakter");
+        return false;
       }
       if (password !== confirmPassword) {
-        setError("Konfirmasi password tidak cocok")
-        return false
+        setError("Konfirmasi password tidak cocok");
+        return false;
       }
     }
-    return true
-  }
+    return true;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
     if (!validateForm()) {
-      setIsLoading(false)
-      return
+      setIsLoading(false);
+      return;
     }
 
     try {
       // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
       if (isLogin) {
         // Login logic - check against demo credentials and registered users
-        const existingUsers = JSON.parse(localStorage.getItem("adminUsers") || "[]")
-        let loginSuccess = false
-        let userData = null
+        const existingUsers = JSON.parse(localStorage.getItem("users") || "[]");
+        let loginSuccess = false;
+        let userData = null;
 
         // Check demo credentials
-        if (username === "admin" && password === "admin123") {
-          loginSuccess = true
+        if (username === "superadmin" && password === "superadmin123") {
+          loginSuccess = true;
+          userData = {
+            id: "demo-superadmin",
+            username: "superadmin",
+            fullName: "Super Administrator",
+            email: "superadmin@demo.com",
+            role: "superadmin",
+            loginTime: new Date().toISOString(),
+            rememberMe,
+          };
+        } else if (username === "admin" && password === "admin123") {
+          loginSuccess = true;
           userData = {
             id: "demo-admin",
             username: "admin",
             fullName: "Administrator",
             email: "admin@demo.com",
-            role: "administrator",
+            role: "admin",
             loginTime: new Date().toISOString(),
             rememberMe,
-          }
+          };
+        } else if (username === "user" && password === "user123") {
+          loginSuccess = true;
+          userData = {
+            id: "demo-user",
+            username: "user",
+            fullName: "Regular User",
+            email: "user@demo.com",
+            role: "user",
+            loginTime: new Date().toISOString(),
+            rememberMe,
+          };
         } else {
           // Check registered users
-          const user = existingUsers.find((u: any) => u.username === username && u.password === password)
+          const user = existingUsers.find((u: any) => u.username === username && u.password === password);
           if (user) {
-            loginSuccess = true
+            loginSuccess = true;
             userData = {
               ...user,
               loginTime: new Date().toISOString(),
               rememberMe,
-            }
+            };
           }
         }
 
         if (loginSuccess && userData) {
           // Set authentication state
-          localStorage.setItem("adminLoggedIn", "true")
-          localStorage.setItem("adminUser", JSON.stringify(userData))
+          localStorage.setItem("loggedIn", "true");
+          localStorage.setItem("currentUser", JSON.stringify(userData));
 
-          setSuccess(true)
+          setSuccess(true);
           setTimeout(() => {
-            router.push("/dashboard/admin")
-          }, 1000)
+            // Redirect based on role
+            switch (userData.role) {
+              case 'superadmin':
+                router.push("/dashboard/superadmin");
+                break;
+              case 'admin':
+                router.push("/dashboard/admin");
+                break;
+              case 'user':
+                router.push("/dashboard/user");
+                break;
+              default:
+                router.push("/");
+            }
+          }, 1000);
         } else {
-          setError("Username atau password salah")
+          setError("Username atau password salah");
         }
       } else {
-        // Registration logic
-        const existingUsers = JSON.parse(localStorage.getItem("adminUsers") || "[]")
+        // Registration logic - default role is 'user'
+        const existingUsers = JSON.parse(localStorage.getItem("users") || "[]");
 
         // Check if username or email already exists
         if (existingUsers.some((user: any) => user.username === username)) {
-          setError("Username sudah digunakan")
+          setError("Username sudah digunakan");
         } else if (existingUsers.some((user: any) => user.email === email)) {
-          setError("Email sudah terdaftar")
+          setError("Email sudah terdaftar");
         } else {
-          // Save new user
+          // Save new user with 'user' role by default
           const newUser = {
             id: Date.now().toString(),
             username,
             email,
             fullName,
             password, // In real app, this should be hashed
-            role: "admin",
+            role: "user", // Default role for new registrations
             createdAt: new Date().toISOString(),
-          }
+          };
 
-          existingUsers.push(newUser)
-          localStorage.setItem("adminUsers", JSON.stringify(existingUsers))
+          existingUsers.push(newUser);
+          localStorage.setItem("users", JSON.stringify(existingUsers));
 
-          setSuccess(true)
+          setSuccess(true);
           setTimeout(() => {
-            setIsLogin(true)
-            resetForm()
-          }, 2000)
+            setIsLogin(true);
+            resetForm();
+          }, 2000);
         }
       }
     } catch (error) {
-      console.error("Authentication error:", error)
-      setError("Terjadi kesalahan sistem. Silakan coba lagi.")
+      console.error("Authentication error:", error);
+      setError("Terjadi kesalahan sistem. Silakan coba lagi.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const resetForm = () => {
-    setUsername("")
-    setEmail("")
-    setFullName("")
-    setPassword("")
-    setConfirmPassword("")
-    setError("")
-    setSuccess(false)
-    setRememberMe(false)
-  }
+    setUsername("");
+    setEmail("");
+    setFullName("");
+    setPassword("");
+    setConfirmPassword("");
+    setError("");
+    setSuccess(false);
+    setRememberMe(false);
+  };
 
   const toggleMode = () => {
-    setIsLogin(!isLogin)
-    resetForm()
-  }
+    setIsLogin(!isLogin);
+    resetForm();
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
@@ -730,137 +779,194 @@ const DesktopAuthPage = () => {
   // Check if already logged in
   useEffect(() => {
     const checkAuthStatus = () => {
-      const isLoggedIn = localStorage.getItem("adminLoggedIn")
-      const adminUser = localStorage.getItem("adminUser")
+      const isLoggedIn = localStorage.getItem("adminLoggedIn");
+      const adminUser = localStorage.getItem("adminUser");
 
       if (isLoggedIn === "true" && adminUser) {
         try {
-          const userData = JSON.parse(adminUser)
+          const userData = JSON.parse(adminUser);
+          
           // Check if remember me was enabled or if session is still valid
           if (userData.rememberMe || userData.loginTime) {
-            const loginTime = new Date(userData.loginTime)
-            const now = new Date()
-            const hoursDiff = (now.getTime() - loginTime.getTime()) / (1000 * 60 * 60)
+            const loginTime = new Date(userData.loginTime);
+            const now = new Date();
+            const hoursDiff = (now.getTime() - loginTime.getTime()) / (1000 * 60 * 60);
 
-            // If remember me is enabled, session lasts 30 days, otherwise 24 hours
-            const sessionDuration = userData.rememberMe ? 24 * 30 : 24
+            // Session duration: 30 days if remember me, 24 hours if not
+            const sessionDuration = userData.rememberMe ? 24 * 30 : 24;
 
             if (hoursDiff < sessionDuration) {
-              router.push("/dashboard/admin")
-              return
+              // Redirect based on role
+              switch (userData.role.toLowerCase()) {
+                case "superadmin":
+                  router.push("/dashboard/superadmin");
+                  break;
+                case "admin":
+                  router.push("/dashboard/admin");
+                  break;
+                case "user":
+                  router.push("/dashboard/user");
+                  break;
+                default:
+                  router.push("/");
+              }
+              return;
             }
           }
         } catch (error) {
-          console.error("Error parsing admin user data:", error)
+          console.error("Error parsing admin user data:", error);
         }
       }
 
       // Clear invalid session
-      localStorage.removeItem("adminLoggedIn")
-      localStorage.removeItem("adminUser")
+      localStorage.removeItem("adminLoggedIn");
+      localStorage.removeItem("adminUser");
     }
 
-    checkAuthStatus()
-  }, [router])
+    checkAuthStatus();
+  }, [router]);
+
+  const resetForm = () => {
+    setUsername('');
+    setPassword('');
+    setFullName('');
+    setEmail('');
+    setConfirmPassword('');
+    setError('');
+    setSuccess(false);
+  };
+
+  const toggleAuthMode = () => {
+    setIsLogin(!isLogin);
+    resetForm();
+  };
 
   const validateForm = () => {
     if (!username.trim()) {
-      setError("Username harus diisi")
-      return false
+      setError("Username harus diisi");
+      return false;
     }
 
     if (!password.trim()) {
-      setError("Password harus diisi")
-      return false
+      setError("Password harus diisi");
+      return false;
     }
 
     if (!isLogin) {
       if (!fullName.trim()) {
-        setError("Nama lengkap harus diisi")
-        return false
+        setError("Nama lengkap harus diisi");
+        return false;
       }
       if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        setError("Email tidak valid")
-        return false
+        setError("Email tidak valid");
+        return false;
       }
       if (password.length < 6) {
-        setError("Password minimal 6 karakter")
-        return false
+        setError("Password minimal 6 karakter");
+        return false;
       }
       if (password !== confirmPassword) {
-        setError("Konfirmasi password tidak cocok")
-        return false
+        setError("Konfirmasi password tidak cocok");
+        return false;
       }
     }
-    return true
-  }
+    return true;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
     if (!validateForm()) {
-      setIsLoading(false)
-      return
+      setIsLoading(false);
+      return;
     }
 
     try {
       // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
       if (isLogin) {
-        // Login logic - check against demo credentials and registered users
-        const existingUsers = JSON.parse(localStorage.getItem("adminUsers") || "[]")
-        let loginSuccess = false
-        let userData = null
+        // Login logic
+        const existingUsers = JSON.parse(localStorage.getItem("adminUsers") || "[]");
+        let loginSuccess = false;
+        let userData = null;
 
         // Check demo credentials
-        if (username === "admin" && password === "admin123") {
-          loginSuccess = true
+        if (username === "superadmin" && password === "superadmin123") {
+          loginSuccess = true;
+          userData = {
+            id: "demo-superadmin",
+            username: "superadmin",
+            fullName: "Super Administrator",
+            email: "superadmin@demo.com",
+            role: "superadmin",
+            loginTime: new Date().toISOString(),
+            rememberMe,
+          };
+        } 
+        else if (username === "admin" && password === "admin123") {
+          loginSuccess = true;
           userData = {
             id: "demo-admin",
             username: "admin",
             fullName: "Administrator",
             email: "admin@demo.com",
-            role: "administrator",
+            role: "admin",
             loginTime: new Date().toISOString(),
             rememberMe,
-          }
+          };
         } else {
           // Check registered users
-          const user = existingUsers.find((u: any) => u.username === username && u.password === password)
+          const user = existingUsers.find(
+            (u: any) => u.username === username && u.password === password
+          );
           if (user) {
-            loginSuccess = true
+            loginSuccess = true;
             userData = {
               ...user,
               loginTime: new Date().toISOString(),
               rememberMe,
-            }
+            };
           }
         }
 
         if (loginSuccess && userData) {
           // Set authentication state
-          localStorage.setItem("adminLoggedIn", "true")
-          localStorage.setItem("adminUser", JSON.stringify(userData))
+          localStorage.setItem("adminLoggedIn", "true");
+          localStorage.setItem("adminUser", JSON.stringify(userData));
 
-          setSuccess(true)
+          setSuccess(true);
+          
+          // Redirect based on role
           setTimeout(() => {
-            router.push("/dashboard/admin")
-          }, 1000)
+            switch (userData.role.toLowerCase()) {
+              case "superadmin":
+                router.push("/dashboard/superadmin");
+                break;
+              case "admin":
+                router.push("/dashboard/admin");
+                break;
+              case "user":
+                router.push("/dashboard/user");
+                break;
+              default:
+                router.push("/");
+            }
+          }, 1000);
         } else {
-          setError("Username atau password salah")
+          setError("Username atau password salah");
         }
       } else {
         // Registration logic
-        const existingUsers = JSON.parse(localStorage.getItem("adminUsers") || "[]")
+        const existingUsers = JSON.parse(localStorage.getItem("adminUsers") || "[]");
 
         // Check if username or email already exists
         if (existingUsers.some((user: any) => user.username === username)) {
-          setError("Username sudah digunakan")
+          setError("Username sudah digunakan");
         } else if (existingUsers.some((user: any) => user.email === email)) {
-          setError("Email sudah terdaftar")
+          setError("Email sudah terdaftar");
         } else {
           // Save new user
           const newUser = {
@@ -868,39 +974,29 @@ const DesktopAuthPage = () => {
             username,
             email,
             fullName,
-            password, // In real app, this should be hashed
-            role: "admin",
+            password, // Note: In production, always hash passwords!
+            role: "user", // Default role for new registrations
             createdAt: new Date().toISOString(),
-          }
+          };
 
-          existingUsers.push(newUser)
-          localStorage.setItem("adminUsers", JSON.stringify(existingUsers))
+          existingUsers.push(newUser);
+          localStorage.setItem("adminUsers", JSON.stringify(existingUsers));
 
-          setSuccess(true)
+          setSuccess(true);
           setTimeout(() => {
-            setIsLogin(true)
-            resetForm()
-          }, 2000)
+            setIsLogin(true);
+            resetForm();
+          }, 2000);
         }
       }
     } catch (error) {
-      console.error("Authentication error:", error)
-      setError("Terjadi kesalahan sistem. Silakan coba lagi.")
+      console.error("Authentication error:", error);
+      setError("Terjadi kesalahan sistem. Silakan coba lagi.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
-  const resetForm = () => {
-    setUsername("")
-    setEmail("")
-    setFullName("")
-    setPassword("")
-    setConfirmPassword("")
-    setError("")
-    setSuccess(false)
-    setRememberMe(false)
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
