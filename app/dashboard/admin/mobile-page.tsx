@@ -19,6 +19,7 @@ import {
   Home,
   ChevronRight,
   LogOut,
+  ClipboardPlus,
 } from "lucide-react"
 import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
@@ -279,10 +280,10 @@ export default function MobileAdminPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => router.push("/")}
+                onClick={() => router.push("/dashboard/admin/pengajuan")}
                 className="border-blue-200 text-blue-600 hover:bg-blue-50 p-2"
               >
-                <Home className="h-4 w-4" />
+                <ClipboardPlus className="h-4 w-4" />
               </Button>
               <Button
                 variant="outline"

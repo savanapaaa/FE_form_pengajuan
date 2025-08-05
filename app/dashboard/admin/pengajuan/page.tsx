@@ -1874,138 +1874,131 @@ export default function PelayananPublikKomprehensif() {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.1 }}
         >
-        <motion.header
-          initial={{ y: -50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="relative z-10 bg-white/90 backdrop-blur-xl border-b border-gray-200/50 shadow-sm sticky top-0"
-        >
-          <div className="max-w-7xl mx-auto px-6 py-6">
-            <div className="flex items-center justify-between">
-              <motion.div
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="flex items-center space-x-4"
-            >
-              <motion.div
-                whileHover={{ rotate: 15 }}
-                className="w-12 h-12 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg"
-              >
-                <ClipboardPlus className="h-6 w-6 text-white" />
-              </motion.div>
-              <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  Pengajuan
-                </h1>
-                
-              </div>
-            </motion.div>
-
-
-              {/* Desktop Navigation */}
-              <motion.div
-                initial={{ x: 20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                className="flex items-center space-x-3"
-              >
-                {isEditMode ? (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={cancelEdit}
-                    className="hover:bg-red-50 hover:border-red-200 hover:text-red-600 transition-all duration-300"
+          <motion.header
+            initial={{ y: -50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="relative z-10 bg-white/90 backdrop-blur-xl border-b border-gray-200/50 shadow-sm sticky top-0"
+          >
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+              <div className="flex items-center justify-between">
+                <motion.div
+                  initial={{ x: -20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="flex items-center space-x-2 sm:space-x-4"
+                >
+                  <motion.div
+                    whileHover={{ rotate: 15 }}
+                    className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg"
                   >
-                    <X className="h-4 w-4 mr-2" />
-                    Batal Edit
-                  </Button>
-                ) : (
-                  <>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => router.push("/history")}
-                      className="hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
-                    >
-                      <History className="h-4 w-4 mr-2" />
-                      Riwayat
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => router.push("/dashboard/admin")}
-                      className="hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
-                    >
-                      <Home className="h-4 w-4 mr-2" />
-                      Dashboard
-                    </Button>
+                    <ClipboardPlus className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                  </motion.div>
+                  <div>
+                    <h1 className="text-xl sm:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                      Pengajuan
+                    </h1>
+                  </div>
+                </motion.div>
 
+                {/* Desktop Navigation */}
+                <motion.div
+                  initial={{ x: 20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                  className="hidden sm:flex items-center space-x-3"
+                >
+                  {isEditMode ? (
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={confirmLogout}
+                      onClick={cancelEdit}
                       className="hover:bg-red-50 hover:border-red-200 hover:text-red-600 transition-all duration-300"
                     >
-                      <LogOut className="h-4 w-4 mr-2" />
-                      Logout
+                      <X className="h-4 w-4 mr-2" />
+                      Batal Edit
                     </Button>
-                  </>
-                )}
-              </motion.div>
-
-              {/* Mobile Menu */}
-              <div className="sm:hidden">
-                <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.6 }}>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
+                  ) : (
+                    <>
                       <Button
                         variant="outline"
                         size="sm"
-                        className="bg-white/70 backdrop-blur-sm border-gray-200 hover:bg-gray-50 p-1.5"
+                        onClick={() => router.push("/history")}
+                        className="hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
                       >
-                        <div className="flex flex-col space-y-1">
-                          <div className="w-3.5 h-0.5 bg-gray-600 rounded"></div>
-                          <div className="w-3.5 h-0.5 bg-gray-600 rounded"></div>
-                        </div>
+                        <History className="h-4 w-4 mr-2" />
+                        Riwayat
                       </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      align="end"
-                      className="w-48 bg-white/95 backdrop-blur-xl border-white/30 shadow-2xl"
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => router.push("/dashboard/admin")}
+                        className="hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
+                      >
+                        <Home className="h-4 w-4 mr-2" />
+                        Dashboard
+                      </Button>
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={confirmLogout}
+                        className="hover:bg-red-50 hover:border-red-200 hover:text-red-600 transition-all duration-300"
+                      >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Logout
+                      </Button>
+                    </>
+                  )}
+                </motion.div>
+
+                {/* Mobile Navigation - Icon Only */}
+                <motion.div
+                  initial={{ x: 20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                  className="flex sm:hidden items-center space-x-2"
+                >
+                  {isEditMode ? (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={cancelEdit}
+                      className="border-red-200 text-red-600 hover:bg-red-50 p-2"
                     >
-                      {isEditMode ? (
-                        <DropdownMenuItem
-                          onClick={cancelEdit}
-                          className="flex items-center space-x-2 text-red-700 hover:bg-red-50 focus:bg-red-50"
-                        >
-                          <X className="h-4 w-4" />
-                          <span>Batal Edit</span>
-                        </DropdownMenuItem>
-                      ) : (
-                        <>
-                          <DropdownMenuItem
-                            onClick={() => router.push("/history")}
-                            className="flex items-center space-x-2 hover:bg-indigo-50 focus:bg-indigo-50"
-                          >
-                            <History className="h-4 w-4" />
-                            <span>Riwayat</span>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => router.push("/admin/login")}
-                            className="flex items-center space-x-2 hover:bg-emerald-50 focus:bg-emerald-50"
-                          >
-                            <Crown className="h-4 w-4" />
-                            <span>Admin Login</span>
-                          </DropdownMenuItem>
-                        </>
-                      )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                      <X className="h-4 w-4" />
+                    </Button>
+                  ) : (
+                    <>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => router.push("/history")}
+                        className="border-blue-200 text-blue-600 hover:bg-blue-50 p-2"
+                      >
+                        <History className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => router.push("/dashboard/admin")}
+                        className="border-blue-200 text-blue-600 hover:bg-blue-50 p-2"
+                      >
+                        <Home className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={confirmLogout}
+                        className="border-red-200 text-red-600 hover:bg-red-50 p-2"
+                      >
+                        <LogOut className="h-4 w-4" />
+                      </Button>
+                    </>
+                  )}
                 </motion.div>
               </div>
             </div>
-          </div>
-        </motion.header>
+          </motion.header>
         </motion.div>
 
         {/* Progress Bar */}
