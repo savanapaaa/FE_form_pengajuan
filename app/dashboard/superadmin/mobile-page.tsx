@@ -129,7 +129,7 @@ export default function MobileAdminPage() {
 
   // Confirm logout
   const confirmLogout = () => {
-    if (window.confirm("Apakah Anda yakin ingin logout dari dashboard admin?")) {
+    if (window.confirm("Apakah Anda yakin ingin logout dari dashboard superadmin?")) {
       handleLogout()
     }
   }
@@ -257,7 +257,7 @@ export default function MobileAdminPage() {
               </motion.div>
               <div>
                 <h1 className="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  Admin Dashboard
+                  Super Admin Dashboard
                 </h1>
                 <p className="text-xs text-gray-600">{adminUser?.fullName || adminUser?.username || "Administrator"}</p>
               </div>
@@ -280,7 +280,7 @@ export default function MobileAdminPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => router.push("/dashboard/admin/pengajuan")}
+                onClick={() => router.push("/dashboard/superadmin/pengajuan")}
                 className="border-blue-200 text-blue-600 hover:bg-blue-50 p-2"
               >
                 <ClipboardPlus className="h-4 w-4" />
@@ -363,7 +363,7 @@ export default function MobileAdminPage() {
           <motion.div initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }}>
             <Card
               className="bg-gradient-to-br from-blue-50 to-indigo-100 border-0 shadow-lg cursor-pointer"
-              onClick={() => router.push("/dashboard/admin/review")}
+              onClick={() => router.push("/dashboard/superadmin/review")}
             >
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
@@ -389,7 +389,7 @@ export default function MobileAdminPage() {
           <motion.div initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }}>
             <Card
               className="bg-gradient-to-br from-purple-50 to-violet-100 border-0 shadow-lg cursor-pointer"
-              onClick={() => router.push("/dashboard/admin/validasi")}
+              onClick={() => router.push("/dashboard/superadmin/validasi")}
             >
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
@@ -415,7 +415,7 @@ export default function MobileAdminPage() {
           <motion.div initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.4 }}>
             <Card
               className="bg-gradient-to-br from-green-50 to-emerald-100 border-0 shadow-lg cursor-pointer"
-              onClick={() => router.push("/dashboard/admin/rekap")}
+              onClick={() => router.push("/dashboard/superadmin/rekap")}
             >
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">

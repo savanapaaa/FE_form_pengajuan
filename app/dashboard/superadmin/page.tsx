@@ -138,7 +138,7 @@ export default function AdminDashboard() {
 
   // Confirm logout
   const confirmLogout = () => {
-    if (window.confirm("Apakah Anda yakin ingin logout dari dashboard admin?")) {
+    if (window.confirm("Apakah Anda yakin ingin logout dari dashboard superadmin?")) {
       handleLogout()
     }
   }
@@ -276,7 +276,7 @@ export default function AdminDashboard() {
               </motion.div>
               <div>
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  Admin Dashboard
+                  Super Admin Dashboard
                 </h1>
                 <p className="text-gray-600">
                   Selamat datang, {adminUser?.fullName || adminUser?.username || "Administrator"}
@@ -310,15 +310,15 @@ export default function AdminDashboard() {
               <span>Lihat Riwayat</span>
             </Button>
 
-            {/* <Button
+            <Button
               variant="outline"
               size="sm"
-              onClick={() => router.push("/dashboard/admin/pengajuan")}
+              onClick={() => router.push("/dashboard/superadmin/pengajuan")}
               className="hover:bg-blue-50 hover:border-blue-200 transition-all duration-300"
             >
               <ClipboardPlus className="h-4 w-4 mr-2" />
               Pengajuan
-            </Button> */}
+            </Button>
 
             <Button
               variant="outline"
@@ -462,7 +462,7 @@ export default function AdminDashboard() {
           <motion.div initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }}>
             <Card
               className="border-0 shadow-xl bg-gradient-to-br from-blue-50 to-indigo-100 hover:shadow-2xl transition-all duration-300 cursor-pointer group"
-              onClick={() => router.push("/dashboard/admin/review")}
+              onClick={() => router.push("/dashboard/superadmin/review")}
             >
               <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
@@ -505,7 +505,7 @@ export default function AdminDashboard() {
           <motion.div initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.4 }}>
             <Card
               className="border-0 shadow-xl bg-gradient-to-br from-purple-50 to-violet-100 hover:shadow-2xl transition-all duration-300 cursor-pointer group"
-              onClick={() => router.push("/dashboard/admin/validasi")}
+              onClick={() => router.push("/dashboard/superadmin/validasi")}
             >
               <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
@@ -548,7 +548,7 @@ export default function AdminDashboard() {
           <motion.div initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.5 }}>
             <Card
               className="border-0 shadow-xl bg-gradient-to-br from-green-50 to-emerald-100 hover:shadow-2xl transition-all duration-300 cursor-pointer group"
-              onClick={() => router.push("/dashboard/admin/rekap")}
+              onClick={() => router.push("/dashboard/superadmin/rekap")}
             >
               <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
