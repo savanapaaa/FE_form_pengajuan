@@ -232,28 +232,30 @@ const MobileAuthPage = () => {
       }
 
       if (loginSuccess && userData) {
-        // Set authentication state
-        localStorage.setItem("adminLoggedIn", "true");
-        localStorage.setItem("adminUser", JSON.stringify(userData));
+  const isAdmin = userData.role === "admin" || userData.role === "superadmin"
+  const key = isAdmin ? "admin" : "user"
 
-        setSuccess(true);
-        setTimeout(() => {
-          // Redirect based on role
-          switch (userData.role) {
-            case 'superadmin':
-              router.push("/dashboard/superadmin");
-              break;
-            case 'admin':
-              router.push("/dashboard/admin");
-              break;
-            case 'user':
-              router.push("/dashboard/user");
-              break;
-            default:
-              router.push("/");
-          }
-        }, 1000);
-      } else {
+  localStorage.setItem(`${key}LoggedIn`, "true")
+  localStorage.setItem(`${key}User`, JSON.stringify(userData))
+
+  setSuccess(true)
+  setTimeout(() => {
+    switch (userData.role) {
+      case 'superadmin':
+        router.push("/dashboard/superadmin")
+        break
+      case 'admin':
+        router.push("/dashboard/admin")
+        break
+      case 'user':
+        router.push("/dashboard/user")
+        break
+      default:
+        router.push("/")
+    }
+  }, 1000)
+}
+ else {
         setError("Username atau password salah");
       }
     } catch (error) {
@@ -622,7 +624,19 @@ const DesktopAuthPage = () => {
           loginTime: new Date().toISOString(),
           rememberMe,
         };
-      } else {
+      } 
+      else if (username === "user" && password === "user123") {
+        loginSuccess = true;
+        userData = {
+          id: "demo-user",
+          username: "user",
+          fullName: "userbiasa",
+          email: "user@demo.com",
+          role: "user",
+          loginTime: new Date().toISOString(),
+          rememberMe,
+        };
+      }else {
         // Check registered users
         const user = existingUsers.find(
           (u: any) => u.username === username && u.password === password
@@ -720,10 +734,10 @@ const DesktopAuthPage = () => {
               <Card className="w-full max-w-md backdrop-blur-xl bg-white/90 border-slate-200/50 shadow-xl">
                 <CardHeader className="text-center pb-6">
                   <CardTitle className="text-3xl font-bold text-slate-800">
-                    Masuk ke Admin
+                    Masuk Login
                   </CardTitle>
                   <CardDescription className="text-slate-600 text-lg">
-                    Silakan masukkan kredensial administrator Anda
+                    Silakan masukkan Username dan Password Anda
                   </CardDescription>
                 </CardHeader>
 

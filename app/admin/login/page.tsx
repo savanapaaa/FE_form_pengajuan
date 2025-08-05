@@ -141,39 +141,58 @@ const MobileAuthPage = () => {
 
   // Check if already logged in
   useEffect(() => {
-    const checkAuthStatus = () => {
-      const isLoggedIn = localStorage.getItem("adminLoggedIn")
-      const adminUser = localStorage.getItem("adminUser")
+  const checkAuthStatus = () => {
+    const adminLoggedIn = localStorage.getItem("adminLoggedIn")
+    const adminUser = localStorage.getItem("adminUser")
+    const userLoggedIn = localStorage.getItem("userLoggedIn")
+    const userDataRaw = localStorage.getItem("userData")
 
-      if (isLoggedIn === "true" && adminUser) {
-        try {
-          const userData = JSON.parse(adminUser)
-          // Check if remember me was enabled or if session is still valid
-          if (userData.rememberMe || userData.loginTime) {
-            const loginTime = new Date(userData.loginTime)
-            const now = new Date()
-            const hoursDiff = (now.getTime() - loginTime.getTime()) / (1000 * 60 * 60)
+    const now = new Date()
 
-            // If remember me is enabled, session lasts 30 days, otherwise 24 hours
-            const sessionDuration = userData.rememberMe ? 24 * 30 : 24
+    // 🔐 Cek Admin Login
+    if (adminLoggedIn === "true" && adminUser) {
+      try {
+        const userData = JSON.parse(adminUser)
+        const loginTime = new Date(userData.loginTime)
+        const duration = userData.rememberMe ? 24 * 30 : 24
+        const hoursDiff = (now.getTime() - loginTime.getTime()) / (1000 * 60 * 60)
 
-            if (hoursDiff < sessionDuration) {
-              router.push("/dashboard/admin")
-              return
-            }
-          }
-        } catch (error) {
-          console.error("Error parsing admin user data:", error)
+        if (hoursDiff < duration) {
+          router.push("/dashboard/admin")
+          return
         }
+      } catch (error) {
+        console.error("Gagal parse data admin:", error)
       }
-
-      // Clear invalid session
-      localStorage.removeItem("adminLoggedIn")
-      localStorage.removeItem("adminUser")
     }
 
-    checkAuthStatus()
-  }, [router])
+    // 🔐 Cek User Login
+    if (userLoggedIn === "true" && userDataRaw) {
+      try {
+        const userData = JSON.parse(userDataRaw)
+        const loginTime = new Date(userData.loginTime)
+        const duration = userData.rememberMe ? 24 * 30 : 24
+        const hoursDiff = (now.getTime() - loginTime.getTime()) / (1000 * 60 * 60)
+
+        if (hoursDiff < duration) {
+          router.push("/dashboard/User")
+          return
+        }
+      } catch (error) {
+        console.error("Gagal parse data user:", error)
+      }
+    }
+
+    // Jika tidak login, hapus sesi
+    localStorage.removeItem("adminLoggedIn")
+    localStorage.removeItem("adminUser")
+    localStorage.removeItem("userLoggedIn")
+    localStorage.removeItem("userData")
+  }
+
+  checkAuthStatus()
+}, [router])
+
 
   const validateForm = () => {
     if (!username.trim()) {
@@ -208,100 +227,109 @@ const MobileAuthPage = () => {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
+  e.preventDefault()
+  setIsLoading(true)
+  setError("")
 
-    if (!validateForm()) {
-      setIsLoading(false)
-      return
+  if (!validateForm()) {
+    setIsLoading(false)
+    return
+  }
+
+  try {
+    await new Promise((resolve) => setTimeout(resolve, 1500))
+
+    if (isLogin) {
+  const adminUsers = JSON.parse(localStorage.getItem("adminUsers") || "[]")
+  const regularUsers = JSON.parse(localStorage.getItem("regularUsers") || "[]")
+
+  let loginSuccess = false
+  let userData = null
+
+  // Check demo admin
+  if (username === "admin" && password === "admin123") {
+    loginSuccess = true
+    userData = {
+      id: "demo-admin",
+      username: "admin",
+      fullName: "Administrator",
+      email: "admin@demo.com",
+      role: "admin",
+      loginTime: new Date().toISOString(),
+      rememberMe,
     }
+  } else {
+    // Cek admin
+    const foundAdmin = adminUsers.find((u: any) => u.username === username && u.password === password)
+    const foundUser = regularUsers.find((u: any) => u.username === username && u.password === password)
 
-    try {
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-
-      if (isLogin) {
-        // Login logic - check against demo credentials and registered users
-        const existingUsers = JSON.parse(localStorage.getItem("adminUsers") || "[]")
-        let loginSuccess = false
-        let userData = null
-
-        // Check demo credentials
-        if (username === "admin" && password === "admin123") {
-          loginSuccess = true
-          userData = {
-            id: "demo-admin",
-            username: "admin",
-            fullName: "Administrator",
-            email: "admin@demo.com",
-            role: "administrator",
-            loginTime: new Date().toISOString(),
-            rememberMe,
-          }
-        } else {
-          // Check registered users
-          const user = existingUsers.find((u: any) => u.username === username && u.password === password)
-          if (user) {
-            loginSuccess = true
-            userData = {
-              ...user,
-              loginTime: new Date().toISOString(),
-              rememberMe,
-            }
-          }
-        }
-
-        if (loginSuccess && userData) {
-          // Set authentication state
-          localStorage.setItem("adminLoggedIn", "true")
-          localStorage.setItem("adminUser", JSON.stringify(userData))
-
-          setSuccess(true)
-          setTimeout(() => {
-            router.push("/dashboard/admin")
-          }, 1000)
-        } else {
-          setError("Username atau password salah")
-        }
-      } else {
-        // Registration logic
-        const existingUsers = JSON.parse(localStorage.getItem("adminUsers") || "[]")
-
-        // Check if username or email already exists
-        if (existingUsers.some((user: any) => user.username === username)) {
-          setError("Username sudah digunakan")
-        } else if (existingUsers.some((user: any) => user.email === email)) {
-          setError("Email sudah terdaftar")
-        } else {
-          // Save new user
-          const newUser = {
-            id: Date.now().toString(),
-            username,
-            email,
-            fullName,
-            password, // In real app, this should be hashed
-            role: "admin",
-            createdAt: new Date().toISOString(),
-          }
-
-          existingUsers.push(newUser)
-          localStorage.setItem("adminUsers", JSON.stringify(existingUsers))
-
-          setSuccess(true)
-          setTimeout(() => {
-            setIsLogin(true)
-            resetForm()
-          }, 2000)
-        }
-      }
-    } catch (error) {
-      console.error("Authentication error:", error)
-      setError("Terjadi kesalahan sistem. Silakan coba lagi.")
-    } finally {
-      setIsLoading(false)
+    if (foundAdmin) {
+      loginSuccess = true
+      userData = { ...foundAdmin, loginTime: new Date().toISOString(), rememberMe }
+    } else if (foundUser) {
+      loginSuccess = true
+      userData = { ...foundUser, loginTime: new Date().toISOString(), rememberMe }
     }
   }
+
+  if (loginSuccess && userData) {
+    localStorage.setItem("userLoggedIn", "true")
+    localStorage.setItem("loggedInUser", JSON.stringify(userData))
+
+    setSuccess(true)
+    setTimeout(() => {
+      if (userData.role === "admin") {
+        router.push("/dashboard/admin")
+      } else {
+        router.push("/dashboard/admin")
+      }
+    }, 1000)
+  } else {
+    setError("Username atau password salah")
+  }
+
+
+
+    } else {
+      // 🔁 Registration Logic
+      const isAdmin = role === "admin" || role === "administrator" // opsional
+      const key = isAdmin ? "adminUsers" : "registeredUsers"
+      const existingUsers = JSON.parse(localStorage.getItem(key) || "[]")
+
+      if (existingUsers.some((user: any) => user.username === username)) {
+        setError("Username sudah digunakan")
+      } else if (existingUsers.some((user: any) => user.email === email)) {
+        setError("Email sudah terdaftar")
+      } else {
+        const newUser = {
+          id: Date.now().toString(),
+          username,
+          email,
+          fullName,
+          password,
+          role: isAdmin ? "administrator" : "user",
+          createdAt: new Date().toISOString(),
+        }
+
+        existingUsers.push(newUser)
+        localStorage.setItem(key, JSON.stringify(existingUsers))
+
+        setSuccess(true)
+        setTimeout(() => {
+          setIsLogin(true)
+          resetForm()
+        }, 2000)
+      }
+    }
+
+  } catch (error) {
+    console.error("Authentication error:", error)
+    setError("Terjadi kesalahan sistem. Silakan coba lagi.")
+  } finally {
+    setIsLoading(false)
+  }
+}
+
 
   const resetForm = () => {
     setUsername("")
@@ -729,39 +757,35 @@ const DesktopAuthPage = () => {
 
   // Check if already logged in
   useEffect(() => {
-    const checkAuthStatus = () => {
-      const isLoggedIn = localStorage.getItem("adminLoggedIn")
-      const adminUser = localStorage.getItem("adminUser")
+  const checkAuthStatus = () => {
+    const isLoggedIn = localStorage.getItem("userLoggedIn")
+    const storedUser = localStorage.getItem("loggedInUser")
 
-      if (isLoggedIn === "true" && adminUser) {
-        try {
-          const userData = JSON.parse(adminUser)
-          // Check if remember me was enabled or if session is still valid
-          if (userData.rememberMe || userData.loginTime) {
-            const loginTime = new Date(userData.loginTime)
-            const now = new Date()
-            const hoursDiff = (now.getTime() - loginTime.getTime()) / (1000 * 60 * 60)
+    if (isLoggedIn === "true" && storedUser) {
+      try {
+        const userData = JSON.parse(storedUser)
+        const loginTime = new Date(userData.loginTime)
+        const now = new Date()
+        const hoursDiff = (now.getTime() - loginTime.getTime()) / (1000 * 60 * 60)
+        const sessionDuration = userData.rememberMe ? 24 * 30 : 24
 
-            // If remember me is enabled, session lasts 30 days, otherwise 24 hours
-            const sessionDuration = userData.rememberMe ? 24 * 30 : 24
-
-            if (hoursDiff < sessionDuration) {
-              router.push("/dashboard/admin")
-              return
-            }
-          }
-        } catch (error) {
-          console.error("Error parsing admin user data:", error)
+        if (hoursDiff < sessionDuration) {
+          router.push(userData.role === "admin" ? "/dashboard/admin" : "/dashboard/User")
+          return
         }
+      } catch (error) {
+        console.error("Error parsing user data:", error)
       }
-
-      // Clear invalid session
-      localStorage.removeItem("adminLoggedIn")
-      localStorage.removeItem("adminUser")
     }
 
-    checkAuthStatus()
-  }, [router])
+    // Clear session
+    localStorage.removeItem("userLoggedIn")
+    localStorage.removeItem("loggedInUser")
+  }
+
+  checkAuthStatus()
+}, [router])
+
 
   const validateForm = () => {
     if (!username.trim()) {
